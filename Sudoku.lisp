@@ -1,5 +1,3 @@
-;(asdf:operate 'asdf:load-op 'sudoku-play)
-
 (in-package :sudoku-play)
 
 (defparameter *bsize* 50)
