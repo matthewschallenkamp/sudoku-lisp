@@ -5,15 +5,18 @@
 (defparameter *height* (* 11 *bsize*))
 
 (defmacro new-draw-string-solid-* (string &rest rest)
+  "safely draws strings, replacing empties with a space"
   (let ((mstr string))
     `(if (string= "" ,mstr)
         (draw-string-solid-* " " ,@rest)
         (draw-string-solid-* ,mstr ,@rest))))
 
 (defmacro add-draw (funct)
+  "adds to the draws list"
   `(setf draws (cons ,funct draws)))
 
 (defmacro add-button ((ix iy l h text) &body body)
+  "adds the necessary parts for a button, including a background, text, and the button event"
   `(let ((bcolor *white*) (scolor *black*) (tcolor *black*))
     (add-draw (lambda () 
                 (new-draw-string-solid-*
@@ -22,6 +25,7 @@
     (setf button-events (cons (lambda (button state x y) ,@body) button-events))))
 
 (defun run-sudoku ()
+  "runs the program"
   ;basic data
   (let ((button-events '()) (draws '()) 
         (board (make-array '(9 9) :initial-contents 
@@ -40,9 +44,9 @@
                 (when (and (and (> x sx) (< x (+ sx *bsize*)))
                          (and (> y sy) (< y (+ sy *bsize*))))
                   ;(setf bcolor (sdl:color :r (random 255) :g (random 255) :b (random 255)))
-                  (s-incf spot)
-                  ;later pull out to get next-possible
-                  (setf (aref board tx ty) spot))))))
+                  (setf spot (next-possible board tx ty))
+                  (setf (aref board tx ty) spot)
+                  (validate board))))))
       
    		(sdl:with-events ()
         (:quit-event () t)
