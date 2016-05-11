@@ -10,6 +10,8 @@ This project runs on [sbcl](http://www.sbcl.org/) or another lisp with
 That done, you need to do three things:
 
 place both files in quicklisp\local-projects\sudoku
+
+from your quicklisp\local-projects directory, run
 ```
 echo sudoku\sudoku-play.asd > system-index.txt
 ```
