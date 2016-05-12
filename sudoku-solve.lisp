@@ -30,10 +30,10 @@
   "returns the next possible number, or 0 if there is none"
   (let ((next 0) (spot (aref board x y)) (poss (possibles board x y)))
     (when poss 
-      (loop for num in poss
-          when (< spot num) do (return (setf next num)))
-    	(when (= 0 next)
-        (setf next (car poss))))
+     	(if (= 0 spot)
+        (setf next (car poss))
+        (loop for num in poss
+          when (< spot num) do (return (setf next num)))))
     next))
 
 (defun validate (board)

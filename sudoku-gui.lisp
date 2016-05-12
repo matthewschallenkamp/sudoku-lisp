@@ -29,12 +29,12 @@
                 (new-draw-string-solid-*
                   ,text (+ 13 ,ix) (+ 6 ,iy) :justify :center :color tcolor :font *default-font*)))
     (add-draw (lambda () (draw-box-* ,ix ,iy ,l ,h :color bcolor :stroke-color scolor)))
-    (setf button-events (cons (lambda (button state x y) ,@body) button-events))))
+    (setf buttons (cons (lambda (button state x y) ,@body) buttons))))
 
 (defun run-sudoku ()
   "runs the program"
   ;basic data
-  (let ((button-events '()) (draws '()) 
+  (let ((buttons '()) (draws '()) 
         (board (make-array '(9 9) :initial-contents 
             (loop for x from 1 upto 9 collect (loop for y from 1 upto 9 collect 0))))
         (board-info nil)) ;board info will include the rest of the board data
@@ -65,10 +65,10 @@
           (when (eq key :sdl-key-escape)
 		       (sdl:push-quit-event)))
      		(:mouse-button-down-event (:button button :state state :x x :y y)
-          (loop for funct in button-events
+          (loop for funct in buttons
             do (funcall funct button state x y)))
 	    	(:idle () 
 	    		(sdl:clear-display sdl:*black*)
-					(loop for funct in draws
-            do (funcall funct))
+					(loop for draw in draws
+            do (funcall draw))
    			  (sdl:update-display))))))
