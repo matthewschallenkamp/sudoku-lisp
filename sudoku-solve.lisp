@@ -7,7 +7,6 @@
      (when (> ,item 9) (setf ,item 0))
      ,item))
 
-
 (defun square (x y)
   "returns a list of (x y) spots that is the square around the given spot"
   (let ((sx (- x (mod x 3))) (sy (- y (mod y 3))))
@@ -44,3 +43,22 @@
 				(setf (aref board x y) 0)
 				(assert (or (= spot 0) (member spot (possibles board x y))))
     		(setf (aref board x y) spot)))))
+
+(defun solve-dfs (board &optional (x 0) (y 0))
+  ;(print (list x y board))
+  ;(print (list x y))
+  (if (= 9 y) 
+    '(board t)
+    (let ((here (aref board x y)) 
+          (nx (if (= x 8) 0 (1+ x))) 
+          (ny (if (= x 8) (1+ y) y)))
+    	(if (= 0 here)
+      	(let ((sub 
+          (loop for next in (possibles board x y) do
+	            (setf (aref board x y) next)
+	            (let ((res (solve-dfs board nx ny)))
+	              (when (cadr res)
+	                (return res)))
+             	(setf (aref board x y) 0))))
+          (if (cadr sub) sub '(board nil)))
+        (solve-dfs board nx ny)))))
