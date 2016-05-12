@@ -4,6 +4,13 @@
 (defparameter *width* (* 11 *bsize*))
 (defparameter *height* (* 11 *bsize*))
 
+(defmacro alias ((name thing) &rest body)
+  "makes name a function that returns thing, and is setf-able"
+  `(flet 
+     ((,name () ,thing)
+      ((setf ,name) (val) (setf ,thing val)))
+     ,@body))
+
 (defmacro new-draw-string-solid-* (string &rest rest)
   "safely draws strings, replacing empties with a space"
   (let ((mstr string))
@@ -39,14 +46,18 @@
       ;add the buttons for each spot
       (loop for ix from 1 upto 9
         do (loop for iy from 1 upto 9
-          do (let ((sx (* ix *bsize*)) (sy (* iy *bsize*)) (tx (1- ix)) (ty (1- iy)) (spot 0))
-              (add-button (sx sy *bsize* *bsize* (if (= 0 spot) "" (write-to-string spot)))
-                (when (and (and (> x sx) (< x (+ sx *bsize*)))
-                         (and (> y sy) (< y (+ sy *bsize*))))
-                  ;(setf bcolor (sdl:color :r (random 255) :g (random 255) :b (random 255)))
-                  (setf spot (next-possible board tx ty))
-                  (setf (aref board tx ty) spot)
-                  (validate board))))))
+          do (let ((sx (* ix *bsize*)) (sy (* iy *bsize*)) (tx (1- ix)) (ty (1- iy)))
+              (alias (spot (aref board tx ty))
+                (add-button (sx sy *bsize* *bsize* (if (= 0 (spot)) "" (write-to-string (spot))))
+                  (when (and (> x sx) (< x (+ sx *bsize*))
+                          (> y sy) (< y (+ sy *bsize*)))
+                    (cond 
+                      ((eq button sdl-button-left)
+                        (setf (spot) (next-possible board tx ty)))
+                      ((eq button sdl-button-right)
+                       (setf (spot) 0))
+                      (t nil))
+                    (validate board)))))))
       
    		(sdl:with-events ()
         (:quit-event () t)

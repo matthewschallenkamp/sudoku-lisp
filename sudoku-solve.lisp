@@ -31,9 +31,8 @@
   (let ((next 0) (spot (aref board x y)) (poss (possibles board x y)))
     (when poss 
       (loop for num in poss
-          until (< spot num) 
-          finally (setf next num))
-    	(when (= 0 next) 
+          when (< spot num) do (return (setf next num)))
+    	(when (= 0 next)
         (setf next (car poss))))
     next))
 
