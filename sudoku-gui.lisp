@@ -2,8 +2,10 @@
 
 (defparameter *bsize* 50)
 (defparameter *width* (* 11 *bsize*))
-(defparameter *height* (* 11 *bsize*))
+(defparameter *height* (+ 15 (* 11 *bsize*)))
+
 (defun *empty* ()
+  "an empty sudoku board"
   (make-array '(9 9) :initial-contents 
     (loop repeat 9 collect (loop repeat 9 collect 0))))
 
@@ -27,12 +29,13 @@
 
 (defmacro add-button ((ix iy l h text) &body body)
   "adds the necessary parts for a button, including a background, text, and the button event"
-  `(let ((bcolor *white*) (scolor *black*) (tcolor *black*))
-    (add-draw (new-draw-string-solid-* ,text (+ 13 ,ix) (+ 6 ,iy) :justify :center :color tcolor))
-    (add-draw (draw-box-* ,ix ,iy ,l ,h :color bcolor :stroke-color scolor))
+  `(let ((bcolor *white*) (scolor *black*) (tcolor *black*)
+         (px ,ix) (py ,iy) (pl ,l) (ph ,h))
+    (add-draw (new-draw-string-solid-* ,text (+ 13 px) (+ 6 py) :justify :center :color tcolor))
+    (add-draw (draw-box-* px py pl ph :color bcolor :stroke-color scolor))
     (setf buttons (cons (lambda (button state x y) 
-        (when (and (> x ,ix) (< x (+ ,ix ,l))
-                   (> y ,iy) (< y (+ ,iy ,h))) 
+        (when (and (> x px) (< x (+ px pl))
+                   (> y py) (< y (+ py ph))) 
           ,@body))
       buttons))))
 
@@ -48,7 +51,9 @@
       ;add the buttons for each spot
       (loop for ix from 1 upto 9
         do (loop for iy from 1 upto 9
-          do (let ((sx (* ix *bsize*)) (sy (* iy *bsize*)) (tx (1- ix)) (ty (1- iy)))
+          do (let* ((tx (1- ix)) (ty (1- iy))
+                   (sx (+ (* 3 (truncate tx 3)) (* ix *bsize*))) 
+                   (sy (+ (* 3 (truncate ty 3)) (* iy *bsize*) 15)))
               (alias (spot (aref board tx ty))
                 (add-button (sx sy *bsize* *bsize* (if (= 0 (spot)) "" (write-to-string (spot))))
                   (when (eq state sdl-cffi::sdl-pressed)
@@ -66,14 +71,13 @@
             ((eq button sdl-button-left)
               (solve-dfs board))
             (t nil))))
-      (add-button ((* 4 *bsize*) 0 (* 3 *bsize*) *bsize* "clear")
+      (add-button ((+ 3 (* 4 *bsize*)) 0 (* 3 *bsize*) *bsize* "clear")
         (when (eq state sdl-cffi::sdl-pressed)
-          (print board)
           (cond 
             ((eq button sdl-button-left)
               (setf board (*empty*)))
             (t nil))))
-      (add-button ((* 7 *bsize*) 0 (* 3 *bsize*) *bsize* "quit")
+      (add-button ((+ 6 (* 7 *bsize*)) 0 (* 3 *bsize*) *bsize* "quit")
         (when (eq state sdl-cffi::sdl-pressed)
           (cond 
             ((eq button sdl-button-left)

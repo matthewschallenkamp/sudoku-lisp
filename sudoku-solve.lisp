@@ -45,8 +45,7 @@
     		(setf (aref board x y) spot)))))
 
 (defun solve-dfs (board &optional (x 0) (y 0))
-  ;(print (list x y board))
-  ;(print (list x y))
+  "solves a sudoku board using a simple dfs"
   (if (= 9 y) 
     '(board t)
     (let ((here (aref board x y)) 
@@ -55,10 +54,10 @@
     	(if (= 0 here)
       	(let ((sub 
           (loop for next in (possibles board x y) do
-	            (setf (aref board x y) next)
-	            (let ((res (solve-dfs board nx ny)))
-	              (when (cadr res)
-	                (return res)))
-             	(setf (aref board x y) 0))))
+            (setf (aref board x y) next)
+            (let ((res (solve-dfs board nx ny)))
+              (when (cadr res)
+                (return res)))
+           	(setf (aref board x y) 0))))
           (if (cadr sub) sub '(board nil)))
         (solve-dfs board nx ny)))))
