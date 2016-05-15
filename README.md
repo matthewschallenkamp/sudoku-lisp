@@ -11,10 +11,8 @@ That done, you need to do three things:
 
 place both files in quicklisp\local-projects\sudoku
 
-from your quicklisp\local-projects directory, run
-```
-echo sudoku\sudoku-play.asd > system-index.txt
-```
+add "sudoku\sudoku-play.asd" on a new line to your system-index.txt file
+
 load into sbcl with `(ql:quickload "sudoku-play")`
 
 ## Running
