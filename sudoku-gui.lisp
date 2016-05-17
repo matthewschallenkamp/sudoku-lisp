@@ -32,7 +32,7 @@ including a background, text, and the button event"
          (px ,ix) (py ,iy) (pl ,l) (ph ,h))
      (push (lambda () 
              (new-draw-string-solid-* ,text (+ 13 px) (+ 6 py) 
-                                    :justify :center :color tcolor)) 
+                                      :justify :center :color tcolor)) 
            draws)
      (push (lambda () 
              (draw-box-* px py pl ph :color bcolor :stroke-color scolor))
@@ -41,7 +41,7 @@ including a background, text, and the button event"
              (when (and (> ,x px) (< ,x (+ px pl))
                         (> ,y py) (< ,y (+ py ph))) 
                ,@body))
-        buttons)))
+            buttons)))
 
 (defun run-sudoku ()
   "opens a window and runs the sudoku game"
